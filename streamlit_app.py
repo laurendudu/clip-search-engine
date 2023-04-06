@@ -1,6 +1,9 @@
+import urllib.request
 import streamlit as st
 import pinecone
+from PIL import Image
 from utils import get_text_embedding
+
 
 PINECONE_KEY = st.secrets["PINECONE_KEY"]
 
@@ -35,4 +38,13 @@ top_k_samples = index.query(
 st.image([result.id for result in top_k_samples["matches"]], width=200)
 
 for result in top_k_samples["matches"]:
-    st.write("![image]({})".format(result.id.replace('"', "")))
+
+    print(result.id)
+
+    # open the image url and convert it to a PIL image
+    urllib.request.urlretrieve(result.id, "temp.jpg")
+    image = Image.open("temp.jpg")
+
+    st.image(image, width=200)
+
+    st.markdown('<div style="padding: 5px 5px 5px 5px"></div>', unsafe_allow_html=True)
