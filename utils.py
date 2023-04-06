@@ -1,39 +1,43 @@
 import torch
-from transformers import CLIPProcessor, CLIPModel, CLIPTokenizer
 
+import fiftyone.zoo as foz
 
-def get_model_info(model_ID, device):
+from pkg_resources import packaging
 
-    # Save the model to device
-    model = CLIPModel.from_pretrained(model_ID).to(device)
-
-    # Get the processor
-    processor = CLIPProcessor.from_pretrained(model_ID)
-
-    # Get the tokenizer
-    tokenizer = CLIPTokenizer.from_pretrained(model_ID)
-
-    # Return model, processor & tokenizer
-    return model, processor, tokenizer
-
-
-# Set the device
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-model_ID = "openai/clip-vit-base-patch32"
+if packaging.version.parse(torch.__version__) < packaging.version.parse("1.8.0"):
+    dtype = torch.long
+else:
+    dtype = torch.int
 
-model, processor, tokenizer = get_model_info(model_ID, device)
+model = foz.load_zoo_model("clip-vit-base32-torch")
 
 
-def get_single_text_embedding(text):
+def get_text_embedding(prompt, clip_model=model):
+    tokenizer = clip_model._tokenizer
 
-    global tokenizer, model, device
+    # standard start-of-text token
+    sot_token = tokenizer.encoder["<|startoftext|>"]
 
-    inputs = tokenizer(text, return_tensors="pt").to(device)
+    # standard end-of-text token
+    eot_token = tokenizer.encoder["<|endoftext|>"]
 
-    text_embeddings = model.get_text_features(**inputs)
+    prompt_tokens = tokenizer.encode(prompt)
+    all_tokens = [[sot_token] + prompt_tokens + [eot_token]]
 
-    # convert the embeddings to numpy array
-    embedding_as_np = text_embeddings.cpu().detach().numpy()
+    text_features = torch.zeros(
+        len(all_tokens),
+        clip_model.config.context_length,
+        dtype=dtype,
+        device=device,
+    )
 
-    return embedding_as_np
+    # insert tokens into feature vector
+    text_features[0, : len(all_tokens[0])] = torch.tensor(all_tokens)
+
+    # encode text
+    embedding = clip_model._model.encode_text(text_features).to(device)
+
+    # convert to list for Pinecone
+    return embedding.tolist()
