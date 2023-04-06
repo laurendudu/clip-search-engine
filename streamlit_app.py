@@ -25,7 +25,7 @@ pinecone.init(api_key=PINECONE_KEY, environment="us-east4-gcp")  # app.pinecone.
 index_name = "clip-image-search"
 index = pinecone.Index(index_name=index_name)
 
-text_query = st.text_input("Search for images", "A cat in the rain")
+text_query = st.text_input("Search for images", "salad on a plate")
 number_of_results = st.slider("Number of results", 1, 20, 5)
 
 query_vector = get_text_embedding(text_query)
@@ -35,19 +35,4 @@ top_k_samples = index.query(
 )
 
 
-# st.image([str(result.id) for result in top_k_samples["matches"]], width=200)
-
-for result in top_k_samples["matches"]:
-    st.markdown("<img src='{}' width='200'>".format(result.id), unsafe_allow_html=True)
-
-for result in top_k_samples["matches"]:
-
-    print(result.id)
-
-    # open the image url and convert it to a PIL image
-    urllib.request.urlretrieve(result.id, "temp.jpg")
-    image = Image.open("temp.jpg")
-
-    st.image(image, width=200)
-
-    st.markdown('<div style="padding: 5px 5px 5px 5px"></div>', unsafe_allow_html=True)
+st.image([str(result.id) for result in top_k_samples["matches"]], width=200)
