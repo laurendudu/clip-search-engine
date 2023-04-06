@@ -35,7 +35,10 @@ top_k_samples = index.query(
 )
 
 
-st.image([str(result.id) for result in top_k_samples["matches"]], width=200)
+# st.image([str(result.id) for result in top_k_samples["matches"]], width=200)
+
+for result in top_k_samples["matches"]:
+    st.markdown("<img src='{}' width='200'>".format(result.id), unsafe_allow_html=True)
 
 for result in top_k_samples["matches"]:
 
