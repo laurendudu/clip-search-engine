@@ -2,6 +2,5 @@
 config.py
 __pycache__
 data/
-*.toml
-.streamlit
+secrets.toml
 temp.jpg
