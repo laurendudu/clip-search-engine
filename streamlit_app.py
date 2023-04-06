@@ -1,7 +1,5 @@
-import urllib.request
 import streamlit as st
 import pinecone
-from PIL import Image
 from utils import get_text_embedding
 
 
