@@ -23,12 +23,13 @@ index_name = "clip-image-search"
 index = pinecone.Index(index_name=index_name)
 
 text_query = st.text_input("Search for images", "A cat in the rain")
+number_of_results = st.slider("Number of results", 1, 20, 5)
 
 query_vector = get_text_embedding(text_query)
 
-top_k_samples = index.query(vector=query_vector, top_k=10, include_values=False)
+top_k_samples = index.query(
+    vector=query_vector, top_k=number_of_results, include_values=False
+)
 
-for result in top_k_samples["matches"]:
-    st.image(result.id)
 
-st.image(result.id for result in top_k_samples["matches"])
+st.image([result.id for result in top_k_samples["matches"]], width=200)
