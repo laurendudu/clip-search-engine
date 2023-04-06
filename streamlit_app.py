@@ -1,8 +1,8 @@
 import streamlit as st
-import pandas as pd
 import pinecone
-from config import PINECONE_KEY
 from utils import get_text_embedding
+
+PINECONE_KEY = st.secrets["PINECONE_KEY"]
 
 st.write(
     """
@@ -30,3 +30,5 @@ top_k_samples = index.query(vector=query_vector, top_k=10, include_values=False)
 
 for result in top_k_samples["matches"]:
     st.image(result.id)
+
+st.image(result.id for result in top_k_samples["matches"])
