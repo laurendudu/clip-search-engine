@@ -57,7 +57,7 @@ index_name = "clip-image-search"
 index = pinecone.Index(index_name=index_name)
 
 text_query = st.text_input(":mag_right: Search for images", "salad on a plate")
-# create a green streamlit slider going from 1 to 10
+
 number_of_results = st.slider("Number of results ", 1, 100, 10)
 
 query_vector = get_text_embedding(text_query)
