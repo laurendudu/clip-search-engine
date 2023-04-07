@@ -22,7 +22,7 @@ Great! You should have an Index now on your Pinecone console, called `clip-image
 
 2. In the .streamlit folder, create a `secrets.toml` file
 
-3. Insert your Pinecone key, such as `PINECONE_KEY=your_key_here`
+3. Insert your Pinecone key, such as `PINECONE_KEY = your_key_here`
 
 4. Run `streamlit run streamlit_app.py`
 
